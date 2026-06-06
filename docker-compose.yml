@@ -3,16 +3,21 @@ services:
   # Core demo stack (starts with `docker compose up -d`)
   # ----------------------------------------------------------------------- #
   traefik:
-    image: traefik:v3.2
+    image: docker.io/library/traefik:v3.2
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--accesslog=true"
     ports:
-      - "80:80"
+      - "${HTTP_PORT:-80}:80"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Container engine socket for Traefik's provider. Defaults to the Docker socket;
+      # on rootless Podman set CONTAINER_SOCK=/run/user/$UID/podman/podman.sock in .env.
+      - ${CONTAINER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock:ro
+    security_opt:
+      # Lets the confined Traefik container read the engine socket under SELinux (no-op on Docker without SELinux).
+      - label=disable
     depends_on:
       - frontend
       - predict
@@ -28,17 +33,17 @@ services:
   predict:
     build: ./services/predict
     ports:
-      - "8000:8000"
+      - "${PREDICT_PORT:-8000}:8000"
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
       # Trained artifacts (model.pkl, pipeline.pkl, metrics.json, fairness.json, schema.json).
       # Read-only; if the directory is empty the service falls back to the heuristic.
-      - ./models:/app/models:ro
+      - ./models:/app/models:ro,z
       # Training dataset (offenders.parquet) — read-only, backs the Dataset inspection page.
       # If absent the /dataset endpoint reports available=false rather than fabricating rows.
-      - ./data:/app/data:ro
+      - ./data:/app/data:ro,z
     environment:
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost}
@@ -66,9 +71,9 @@ services:
       POSTGRES_PASSWORD: sentinel
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro,z
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sentinel"]
       interval: 5s
@@ -89,10 +94,12 @@ services:
       - ollama
     volumes:
       # Policy/fairness sources for retrieval (read-only).
-      - ./domain_packs:/app/domain_packs:ro
+      - ./domain_packs:/app/domain_packs:ro,z
     environment:
       - AGENT_LLM_PROVIDER=${AGENT_LLM_PROVIDER:-ollama}
-      - OLLAMA_URL=http://ollama:11434
+      # Defaults to the bundled ollama container; point at a host/remote Ollama via .env
+      # (e.g. OLLAMA_URL=http://host.containers.internal:11434 to reuse a host instance).
+      - OLLAMA_URL=${OLLAMA_URL:-http://ollama:11434}
       - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-claude-sonnet-4-6}
