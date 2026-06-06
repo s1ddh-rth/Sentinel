@@ -52,10 +52,16 @@ def _build_model() -> Any:
         provider = AnthropicProvider(api_key=settings.anthropic_api_key)
         return AnthropicModel(settings.anthropic_model, provider=provider)
 
-    # Default: Ollama via its OpenAI-compatible endpoint.
+    # Both Ollama and Groq speak the OpenAI-compatible protocol, so the same OpenAI model/provider
+    # serves both — only the base URL, key, and model name differ.
     from pydantic_ai.models.openai import OpenAIModel  # noqa: PLC0415
     from pydantic_ai.providers.openai import OpenAIProvider  # noqa: PLC0415
 
+    if settings.agent_llm_provider == "groq":
+        provider = OpenAIProvider(base_url=settings.groq_url, api_key=settings.groq_api_key)
+        return OpenAIModel(settings.groq_model, provider=provider)
+
+    # Default: Ollama via its OpenAI-compatible endpoint.
     provider = OpenAIProvider(base_url=f"{settings.ollama_url}/v1", api_key="ollama")
     return OpenAIModel(settings.ollama_model, provider=provider)
 

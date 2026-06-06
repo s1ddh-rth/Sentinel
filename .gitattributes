@@ -1,0 +1,10 @@
+# Normalise text to LF in the repo and on checkout, so the stack builds identically on the Linux
+# deployment box regardless of the OS it was committed from. Binary assets are left untouched.
+* text=auto eol=lf
+
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.ico   binary
+*.pkl   binary
+*.parquet binary

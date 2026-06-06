@@ -192,9 +192,10 @@ function SystemMessage() {
       borderLeft: "3px solid var(--color-accent)",
       fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6,
     }}>
-      I can answer questions about sentencing guidelines, policy documents, and individual case details.
-      I can also look up risk assessments and query the knowledge graph. All responses include source citations
-      and a retrieval-path tag — every claim is grounded in retrievable evidence.
+      I can surface sentencing guidelines, policy documents, and case details, look up risk assessments,
+      and query the knowledge graph. Responses cite their sources and tag the retrieval path so you can
+      verify them. I am a research aid, not a decision-maker — confirm anything consequential against the
+      cited source before acting on it.
     </div>
   );
 }

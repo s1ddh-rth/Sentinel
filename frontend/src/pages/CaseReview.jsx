@@ -188,7 +188,7 @@ function SHAPCard({ shap }) {
         <span className="label-tertiary">Top 10 features by SHAP contribution</span>
       </div>
       <div className="label-tertiary" style={{ marginBottom: 16 }}>
-        Each bar shows the feature's contribution to this case's risk score. Plain English labels; values shown on the right.
+        Each bar shows how a feature moved the model's predicted probability for this case. Plain-English labels; values shown on the right.
       </div>
       <ShapChart data={shap} />
     </div>
@@ -356,7 +356,7 @@ function OverrideCard({ offenderId, currentBand, override, onApplied }) {
         <span className="label-tertiary">{override && override.originalBand ? "Override on record" : "No override on record"}</span>
       </div>
       <div className="label-tertiary" style={{ marginBottom: 14 }}>
-        Submitted overrides are logged to the audit trail and inform future model calibration.
+        Submitted overrides are recorded in the audit trail with your reason code.
       </div>
       <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <Field label="Adjust risk band">
@@ -422,10 +422,12 @@ function MiniChatCard({ navigate, offenderId }) {
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Honest offline state: when the agent service isn't connected we must NOT fabricate a substantive
+  // recommendation (a made-up citation/effect size could be acted on as real evidence).
   const simulated = {
-    answer: "Based on this offender's profile and the supervision conditions currently in place, evidence-based interventions include cognitive behavioural therapy targeting decision-making, and structured drug-court placement. Both have meta-analytic effect sizes of d ≈ 0.25 on reoffence reduction for similar profiles[1].",
-    citation: { source: "MoJ Evidence Review, 2023", page: 14, score: 0.88 },
-    path: "Hybrid",
+    answer: "The assistant is offline — no LLM is connected, so this is a sample response, not a real recommendation. Start the agent service to ask about evidence-based interventions for this case.",
+    citation: null,
+    path: "offline",
   };
 
   const onSend = async (e) => {
@@ -435,10 +437,10 @@ function MiniChatCard({ navigate, offenderId }) {
     setResponse(null);
     try {
       const r = await api.chat({ message: q, offender_id: offenderId });
-      const cite = (r.citations && r.citations[0]) || simulated.citation;
+      const cite = (r.citations && r.citations[0]) || null;
       setResponse({
         answer: r.answer || simulated.answer,
-        citation: { source: cite.source, page: cite.page, score: cite.score },
+        citation: cite ? { source: cite.source, page: cite.page, score: cite.score } : null,
         path: r.retrieval || "Hybrid",
       });
     } catch {
@@ -484,8 +486,10 @@ function MiniChatCard({ navigate, offenderId }) {
           </div>
           <div style={{ marginTop: 10, display: "flex", justifyContent: "space-between",
             fontSize: 11, color: "var(--color-text-tertiary)" }}>
-            <span><span className="mono">[1]</span> {response.citation.source}, p.{response.citation.page}</span>
-            <span className="tag">{response.path} retrieval</span>
+            <span>{response.citation
+              ? <><span className="mono">[1]</span> {response.citation.source}, p.{response.citation.page}</>
+              : null}</span>
+            <span className="tag">{response.citation ? `${response.path} retrieval` : "assistant offline"}</span>
           </div>
         </div>
       )}

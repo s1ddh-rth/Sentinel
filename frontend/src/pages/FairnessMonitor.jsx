@@ -99,7 +99,9 @@ export default function FairnessMonitor() {
           <span className="label-tertiary">Mean predicted risk per group · race</span>
         </div>
         <div className="label-tertiary" style={{ marginBottom: 12 }}>
-          Reweighing (pre-processing) + Exponentiated Gradient (in-processing) reduces dispersion of predicted risk across groups by 41%.
+          Kamiran–Calders reweighing plus per-group decision thresholds narrow the dispersion of predicted
+          risk across groups. Figures are illustrative — computed on the synthetic evaluation set, not a
+          validated bias-reduction result.
         </div>
         <GroupedBarChart
           data={comparison}

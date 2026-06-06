@@ -8,12 +8,18 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    # LLM provider: "ollama" (primary, self-hosted) or "anthropic" (portable fallback).
+    # LLM provider, selected by AGENT_LLM_PROVIDER:
+    #   "ollama"    — primary, self-hosted, OpenAI-compatible (free + private)
+    #   "groq"      — fast hosted, OpenAI-compatible (free tier; good when CPU Ollama is slow)
+    #   "anthropic" — portable hosted fallback
     agent_llm_provider: str = "ollama"
     ollama_url: str = "http://ollama:11434"
     ollama_model: str = "qwen2.5"
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-4-6"
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
+    groq_url: str = "https://api.groq.com/openai/v1"
 
     # Retrieval
     embed_model: str = "sentence-transformers/all-MiniLM-L6-v2"

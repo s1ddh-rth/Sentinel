@@ -43,3 +43,8 @@ CLAUDE.md
 test-results/
 playwright-report/
 .playwright-mcp/
+
+# Loose screenshots dropped in the repo root by QA runs (curated docs live in docs/screenshots/)
+/*.png
+/*.jpg
+/*.jpeg

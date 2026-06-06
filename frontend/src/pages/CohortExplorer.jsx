@@ -84,7 +84,7 @@ export default function CohortExplorer() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <PageHeader title="Cohort Explorer"
-        subtitle="Filter and triage offenders across the production population. Click a row to open the full case review."
+        subtitle="Filter and review cases across the synthetic NIJ-schema population by risk band and attributes — see Dataset for provenance. Click a row to open the full case review."
         actions={
           <button className="btn btn-secondary" onClick={exportCsv}>
             <Icon name="Download" size={14} /> Export CSV

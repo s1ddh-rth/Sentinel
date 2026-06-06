@@ -150,8 +150,9 @@ export default function ModelPerformance() {
                   </td>
                   <td>
                     {r.status === "staging" && (
-                      <button className="btn btn-primary" style={{ fontSize: 11, padding: "5px 10px" }}>
-                        Promote
+                      <button className="btn btn-primary" style={{ fontSize: 11, padding: "5px 10px" }}
+                        title="Changes the model used for live advisory scoring (requires confirmation)">
+                        Promote to production…
                       </button>
                     )}
                   </td>
