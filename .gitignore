@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.venv-train/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Data & artifacts (large / generated)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+*.parquet
+# Keep the synthetic training parquet so a fresh clone has the Dataset page data + can retrain.
+!data/processed/offenders.parquet
+mlruns/
+mlflow.db
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Env & secrets
+.env
+*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local agent working-contract (kept out of the public repo by design)
+CLAUDE.md
+.claude/
+
+# Test / playwright
+test-results/
+playwright-report/
+.playwright-mcp/

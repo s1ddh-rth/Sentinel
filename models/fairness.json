@@ -1,0 +1,95 @@
+{
+  "Race": {
+    "by_group": {
+      "BLACK": {
+        "selection_rate": 0.3074729035938391,
+        "tpr": 0.4273182957393484,
+        "fpr": 0.20732984293193718,
+        "accuracy": 0.6263548203080433
+      },
+      "HISPANIC": {
+        "selection_rate": 0.34868421052631576,
+        "tpr": 0.4444444444444444,
+        "fpr": 0.27218934911242604,
+        "accuracy": 0.6019736842105263
+      },
+      "OTHER": {
+        "selection_rate": 0.29533678756476683,
+        "tpr": 0.4805194805194805,
+        "fpr": 0.1724137931034483,
+        "accuracy": 0.689119170984456
+      },
+      "WHITE": {
+        "selection_rate": 0.2982779827798278,
+        "tpr": 0.41641337386018235,
+        "fpr": 0.21797520661157024,
+        "accuracy": 0.6340713407134071
+      }
+    },
+    "reference_group": "HISPANIC",
+    "spd": -0.05334742296154893,
+    "disparate_impact": 0.8470036171668786,
+    "eod": 0.03607503607503609,
+    "ped": -0.09977555600897775,
+    "pass_spd": true,
+    "pass_di": true,
+    "pass_eod": true,
+    "pass_ped": true,
+    "baseline": {
+      "spd": -0.15753058846377935,
+      "disparate_impact": 0.594158483957721,
+      "eod": -0.16156703816278278,
+      "ped": -0.14014743997261478,
+      "pass_spd": false,
+      "pass_di": false,
+      "pass_eod": false,
+      "pass_ped": false
+    }
+  },
+  "Gender": {
+    "by_group": {
+      "F": {
+        "selection_rate": 0.3155963302752294,
+        "tpr": 0.45493562231759654,
+        "fpr": 0.21153846153846154,
+        "accuracy": 0.6458715596330276
+      },
+      "M": {
+        "selection_rate": 0.3047132993095167,
+        "tpr": 0.42229965156794425,
+        "fpr": 0.21571729957805907,
+        "accuracy": 0.6283398378865206
+      }
+    },
+    "reference_group": "F",
+    "spd": -0.010883030965712692,
+    "disparate_impact": 0.9655159774632941,
+    "eod": -0.0326359707496523,
+    "ped": 0.004178838039597538,
+    "pass_spd": true,
+    "pass_di": true,
+    "pass_eod": true,
+    "pass_ped": true,
+    "baseline": {
+      "spd": -0.00744631333676693,
+      "disparate_impact": 0.9758438049491787,
+      "eod": -0.011287404106413879,
+      "ped": -0.005842259006815953,
+      "pass_spd": true,
+      "pass_di": true,
+      "pass_eod": true,
+      "pass_ped": true
+    }
+  },
+  "policy": {
+    "high_cut": 0.5,
+    "target_high_rate": 0.2975,
+    "group_high_thresholds": {
+      "BLACK": 0.5228,
+      "HISPANIC": 0.514,
+      "OTHER": 0.496,
+      "WHITE": 0.4737
+    },
+    "method": "reweighing (Kamiran-Calders) + per-group threshold (demographic-parity post-processing)"
+  }
+}

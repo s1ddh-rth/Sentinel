@@ -1,0 +1,61 @@
+# Criminal-justice domain pack — input schema
+# Expected columns from the NIJ Recidivism Forecasting Challenge dataset (subset of 54 features),
+# with types, constraints, and human-readable descriptions used for validation and UI labels.
+
+target: Recidivism_Within_3years
+protected_attributes: [Race, Gender]
+
+columns:
+  Gender:
+    type: categorical
+    values: [M, F]
+    label: Gender
+  Race:
+    type: categorical
+    values: [WHITE, BLACK, HISPANIC, OTHER]
+    label: Race
+  Age_at_Release:
+    type: numeric
+    min: 18
+    max: 80
+    label: Age at release
+  Gang_Affiliated:
+    type: boolean
+    label: Gang affiliated
+  Education_Level:
+    type: categorical
+    values: ["Less than HS diploma", "High School Diploma", "At least some college"]
+    label: Education level
+  Prior_Arrest_Episodes_Violent:
+    type: numeric
+    min: 0
+    label: Prior violent offences
+  Prior_Arrest_Episodes_Property:
+    type: numeric
+    min: 0
+    label: Prior property offences
+  Prior_Arrest_Episodes_Drug:
+    type: numeric
+    min: 0
+    label: Prior drug offences
+  Prior_Conviction_Episodes_Felony:
+    type: numeric
+    min: 0
+    label: Prior felony convictions
+  Supervision_Level_First:
+    type: categorical
+    values: [Standard, High, Specialized]
+    label: Supervision level
+  Percent_Days_Employed:
+    type: numeric
+    min: 0.0
+    max: 1.0
+    label: Proportion of days employed
+  DrugTests_THC_Positive:
+    type: numeric
+    min: 0.0
+    max: 1.0
+    label: Positive THC drug tests
+  Residence_PUMA:
+    type: categorical
+    label: Residence PUMA (geographic area)

@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-type-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install tooling
+        run: pip install ruff mypy
+      - name: Install predict service deps
+        run: pip install -r services/predict/requirements.txt pytest
+      - name: Ruff lint
+        run: ruff check services/ pipelines/ domain_packs/ fairness/
+      - name: Ruff format check
+        run: ruff format --check services/ pipelines/ domain_packs/ fairness/
+      - name: Type check
+        # Strict mode comes from [tool.mypy] in pyproject (strict=true) with untyped FastAPI/slowapi
+        # decorators allowed; running `--strict` on the CLI would override that and is wrong here.
+        run: mypy services/predict/app
+      - name: Unit tests
+        working-directory: services/predict
+        run: python -m pytest tests/ -v

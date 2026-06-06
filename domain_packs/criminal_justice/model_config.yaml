@@ -1,0 +1,54 @@
+# Criminal-justice domain pack — model configuration
+target_col: Recidivism_Within_3years
+id_col: ID
+
+feature_lists:
+  numeric:
+    - Age_at_Release
+    - Prior_Arrest_Episodes_Violent
+    - Prior_Arrest_Episodes_Property
+    - Prior_Arrest_Episodes_Drug
+    - Prior_Conviction_Episodes_Felony
+    - Percent_Days_Employed
+    - DrugTests_THC_Positive
+  categorical:
+    - Gender
+    - Race
+    - Education_Level
+    - Supervision_Level_First
+  boolean:
+    - Gang_Affiliated
+
+ensemble:
+  method: stacking
+  base_models:
+    - name: xgboost
+      params: { objective: "binary:logistic", max_depth: 4, n_estimators: 300, learning_rate: 0.05 }
+    - name: lightgbm
+      params: { objective: "binary", num_leaves: 31, n_estimators: 300, learning_rate: 0.05 }
+    - name: logistic_regression
+      params: { max_iter: 1000 }
+  meta_learner: logistic_regression
+
+calibration:
+  method: platt          # sigmoid scaling on a held-out calibration set
+conformal:
+  alpha: 0.1             # 90% coverage; UI shows 95% band when alpha=0.05
+
+risk_bands:
+  LOW: [0.0, 0.3]
+  MEDIUM: [0.3, 0.6]
+  HIGH: [0.6, 1.0]
+
+split:
+  test_size: 0.15
+  val_size: 0.15
+  stratify_on: [Recidivism_Within_3years, Race]
+  random_state: 42
+
+# Agent system prompt (used by the GraphRAG assistant)
+system_prompt: |
+  You are SENTINEL's risk-assessment analyst assistant for a criminal-justice setting.
+  You support — never replace — human decision-making. Always ground claims in retrieved
+  evidence and cite sources. Communicate uncertainty. Flag fairness or ethical concerns.
+  Risk scores are advisory probabilities, not authorisations for punitive action.

@@ -1,0 +1,247 @@
+{
+  "model_version": "xgb-cal-v1.0.0",
+  "trained_at": "2026-06-03",
+  "brier": 0.22398303817826343,
+  "auc_roc": 0.6695978814774267,
+  "auc_pr": 0.5981867170261737,
+  "log_loss": 0.638965643507608,
+  "calibration": [
+    {
+      "mean_predicted": 0.22333412565107613,
+      "fraction_positive": 0.23195876288659795
+    },
+    {
+      "mean_predicted": 0.2750418760601775,
+      "fraction_positive": 0.23969072164948454
+    },
+    {
+      "mean_predicted": 0.3121396399507625,
+      "fraction_positive": 0.3152454780361757
+    },
+    {
+      "mean_predicted": 0.34997005047860313,
+      "fraction_positive": 0.3479381443298969
+    },
+    {
+      "mean_predicted": 0.3921277328989376,
+      "fraction_positive": 0.40568475452196384
+    },
+    {
+      "mean_predicted": 0.4333412845648582,
+      "fraction_positive": 0.45618556701030927
+    },
+    {
+      "mean_predicted": 0.4787186857682127,
+      "fraction_positive": 0.4909560723514212
+    },
+    {
+      "mean_predicted": 0.5344049197258178,
+      "fraction_positive": 0.5128865979381443
+    },
+    {
+      "mean_predicted": 0.602279369461807,
+      "fraction_positive": 0.6046511627906976
+    },
+    {
+      "mean_predicted": 0.7181370905058813,
+      "fraction_positive": 0.6984536082474226
+    }
+  ],
+  "roc": [
+    {
+      "fpr": 0.0,
+      "tpr": 0.0,
+      "baseline": 0.0
+    },
+    {
+      "fpr": 0.019927536231884056,
+      "tpr": 0.0803357314148681,
+      "baseline": 0.019927536231884056
+    },
+    {
+      "fpr": 0.044384057971014496,
+      "tpr": 0.13369304556354916,
+      "baseline": 0.044384057971014496
+    },
+    {
+      "fpr": 0.06974637681159421,
+      "tpr": 0.20323741007194246,
+      "baseline": 0.06974637681159421
+    },
+    {
+      "fpr": 0.09692028985507246,
+      "tpr": 0.2547961630695444,
+      "baseline": 0.09692028985507246
+    },
+    {
+      "fpr": 0.1213768115942029,
+      "tpr": 0.30035971223021585,
+      "baseline": 0.1213768115942029
+    },
+    {
+      "fpr": 0.1480978260869565,
+      "tpr": 0.3405275779376499,
+      "baseline": 0.1480978260869565
+    },
+    {
+      "fpr": 0.17481884057971014,
+      "tpr": 0.3854916067146283,
+      "baseline": 0.17481884057971014
+    },
+    {
+      "fpr": 0.20516304347826086,
+      "tpr": 0.41786570743405277,
+      "baseline": 0.20516304347826086
+    },
+    {
+      "fpr": 0.2391304347826087,
+      "tpr": 0.4580335731414868,
+      "baseline": 0.2391304347826087
+    },
+    {
+      "fpr": 0.2726449275362319,
+      "tpr": 0.5065947242206235,
+      "baseline": 0.2726449275362319
+    },
+    {
+      "fpr": 0.30842391304347827,
+      "tpr": 0.5449640287769785,
+      "baseline": 0.30842391304347827
+    },
+    {
+      "fpr": 0.3432971014492754,
+      "tpr": 0.5905275779376499,
+      "baseline": 0.3432971014492754
+    },
+    {
+      "fpr": 0.3740942028985507,
+      "tpr": 0.6247002398081535,
+      "baseline": 0.3740942028985507
+    },
+    {
+      "fpr": 0.4171195652173913,
+      "tpr": 0.6588729016786571,
+      "baseline": 0.4171195652173913
+    },
+    {
+      "fpr": 0.4519927536231884,
+      "tpr": 0.6936450839328537,
+      "baseline": 0.4519927536231884
+    },
+    {
+      "fpr": 0.48867753623188404,
+      "tpr": 0.7266187050359713,
+      "baseline": 0.48867753623188404
+    },
+    {
+      "fpr": 0.5221920289855072,
+      "tpr": 0.7595923261390888,
+      "baseline": 0.5221920289855072
+    },
+    {
+      "fpr": 0.5597826086956522,
+      "tpr": 0.790167865707434,
+      "baseline": 0.5597826086956522
+    },
+    {
+      "fpr": 0.6132246376811594,
+      "tpr": 0.8195443645083933,
+      "baseline": 0.6132246376811594
+    },
+    {
+      "fpr": 0.6616847826086957,
+      "tpr": 0.8489208633093526,
+      "baseline": 0.6616847826086957
+    },
+    {
+      "fpr": 0.7255434782608695,
+      "tpr": 0.88189448441247,
+      "baseline": 0.7255434782608695
+    },
+    {
+      "fpr": 0.7934782608695652,
+      "tpr": 0.9124700239808153,
+      "baseline": 0.7934782608695652
+    },
+    {
+      "fpr": 0.8582427536231884,
+      "tpr": 0.9430455635491607,
+      "baseline": 0.8582427536231884
+    },
+    {
+      "fpr": 0.9257246376811594,
+      "tpr": 0.9718225419664268,
+      "baseline": 0.9257246376811594
+    },
+    {
+      "fpr": 0.9918478260869565,
+      "tpr": 0.999400479616307,
+      "baseline": 0.9918478260869565
+    },
+    {
+      "fpr": 1.0,
+      "tpr": 1.0,
+      "baseline": 1.0
+    }
+  ],
+  "baseline_auc_roc": 0.6735421445452334,
+  "baseline_brier": 0.22281560142440043,
+  "shap_top_global": [
+    {
+      "feature": "num__Prior_Arrest_Episodes_Violent",
+      "mean_abs_shap": 0.330545037984848
+    },
+    {
+      "feature": "num__Age_at_Release",
+      "mean_abs_shap": 0.287596195936203
+    },
+    {
+      "feature": "num__Percent_Days_Employed",
+      "mean_abs_shap": 0.17478780448436737
+    },
+    {
+      "feature": "num__DrugTests_THC_Positive",
+      "mean_abs_shap": 0.11289694905281067
+    },
+    {
+      "feature": "num__Prior_Conviction_Episodes_Felony",
+      "mean_abs_shap": 0.10402326285839081
+    },
+    {
+      "feature": "num__Prior_Arrest_Episodes_Drug",
+      "mean_abs_shap": 0.09954596310853958
+    },
+    {
+      "feature": "num__Prior_Arrest_Episodes_Property",
+      "mean_abs_shap": 0.08230976015329361
+    },
+    {
+      "feature": "num__Gang_Affiliated",
+      "mean_abs_shap": 0.035176005214452744
+    },
+    {
+      "feature": "cat__Education_Level_High School Diploma",
+      "mean_abs_shap": 0.015296499244868755
+    },
+    {
+      "feature": "cat__Supervision_Level_First_Specialized",
+      "mean_abs_shap": 0.013190445490181446
+    },
+    {
+      "feature": "cat__Education_Level_At least some college",
+      "mean_abs_shap": 0.012991620227694511
+    },
+    {
+      "feature": "cat__Supervision_Level_First_High",
+      "mean_abs_shap": 0.011659870855510235
+    },
+    {
+      "feature": "cat__Supervision_Level_First_Standard",
+      "mean_abs_shap": 0.011316887103021145
+    },
+    {
+      "feature": "cat__Education_Level_Less than HS diploma",
+      "mean_abs_shap": 0.009670712985098362
+    }
+  ]
+}

@@ -1,0 +1,405 @@
+/* SENTINEL — Design Tokens */
+:root {
+  /* Surfaces */
+  --color-bg-primary: #0F1A2E;
+  --color-bg-secondary: #1A2742;
+  --color-bg-content: #FAFAF7;
+  --color-bg-card: #FFFFFF;
+  --color-bg-elevated: #F5F5F0;
+
+  /* Text */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #5A6478;
+  --color-text-tertiary: #8B95A5;
+  --color-text-inverse: #F0F2F5;
+  --color-text-inverse-muted: #8B95A5;
+
+  /* Risk bands */
+  --color-risk-low: #3D8B6E;
+  --color-risk-low-bg: #E8F5EE;
+  --color-risk-medium: #C4922A;
+  --color-risk-medium-bg: #FFF8E7;
+  --color-risk-high: #B5453A;
+  --color-risk-high-bg: #FDECEB;
+
+  /* Interactive */
+  --color-accent: #2A7F8E;
+  --color-accent-hover: #1F6672;
+  --color-accent-subtle: #E6F3F5;
+
+  /* Status */
+  --color-success: #3D8B6E;
+  --color-warning: #C4922A;
+  --color-error: #B5453A;
+  --color-info: #2A7F8E;
+
+  /* Borders */
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-strong: rgba(0, 0, 0, 0.15);
+  --color-divider: rgba(0, 0, 0, 0.06);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* Typography */
+  --font-display: 'DM Sans', sans-serif;
+  --font-body: 'Source Sans 3', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Radii */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 6px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background: var(--color-bg-content);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 6px; border: 2px solid var(--color-bg-content); }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+
+/* Page fade-in */
+@keyframes pageFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: pageFade 180ms ease-out both; }
+
+@keyframes cardFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card-stagger > * {
+  animation: cardFade 220ms ease-out both;
+}
+.card-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.card-stagger > *:nth-child(2) { animation-delay: 40ms; }
+.card-stagger > *:nth-child(3) { animation-delay: 80ms; }
+.card-stagger > *:nth-child(4) { animation-delay: 120ms; }
+.card-stagger > *:nth-child(5) { animation-delay: 160ms; }
+.card-stagger > *:nth-child(6) { animation-delay: 200ms; }
+
+/* Utility classes */
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.display { font-family: var(--font-display); }
+
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+}
+
+.card-flush { padding: 0; overflow-x: auto; overflow-y: hidden; }
+
+.section-heading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4) 0;
+  letter-spacing: -0.005em;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 24px;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.label-secondary {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.label-tertiary {
+  color: var(--color-text-tertiary);
+  font-size: 12px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-divider);
+  width: 100%;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  background: transparent;
+  color: var(--color-text-primary);
+}
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+.btn-primary:hover { background: var(--color-accent-hover); border-color: var(--color-accent-hover); }
+.btn-secondary {
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-strong);
+}
+.btn-secondary:hover { background: var(--color-bg-elevated); }
+.btn-ghost { color: var(--color-text-secondary); }
+.btn-ghost:hover { color: var(--color-text-primary); background: var(--color-bg-elevated); }
+
+/* Risk badge */
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+.risk-badge.low    { color: var(--color-risk-low);    background: var(--color-risk-low-bg); }
+.risk-badge.medium { color: var(--color-risk-medium); background: var(--color-risk-medium-bg); }
+.risk-badge.high   { color: var(--color-risk-high);   background: var(--color-risk-high-bg); }
+.risk-badge.neutral { color: var(--color-text-secondary); background: var(--color-bg-elevated); }
+
+/* Pill (filter pills) */
+.pill-group {
+  display: inline-flex;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+.pill-group button {
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-radius: 2px;
+}
+.pill-group button.active {
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Inputs */
+.input, .select, .textarea {
+  width: 100%;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.input:focus, .select:focus, .textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(42, 127, 142, 0.12);
+}
+.textarea { resize: vertical; min-height: 80px; line-height: 1.45; }
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.table thead th {
+  background: var(--color-bg-elevated);
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--color-border);
+  user-select: none;
+}
+.table tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--color-divider);
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+.table tbody tr {
+  transition: background 100ms ease;
+}
+.table tbody tr:hover {
+  background: var(--color-bg-elevated);
+  cursor: pointer;
+}
+.table tbody tr.expanded {
+  background: var(--color-bg-elevated);
+}
+.table th.sortable { cursor: pointer; }
+.table th.sortable:hover { color: var(--color-text-primary); }
+
+/* Tooltip / popover style */
+.popover {
+  position: absolute;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: 12px;
+  color: var(--color-text-primary);
+  max-width: 280px;
+  z-index: 30;
+}
+
+/* Citation chip */
+.citation-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-accent);
+  background: var(--color-accent-subtle);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin: 0 1px;
+  vertical-align: 2px;
+  border: none;
+  transition: background 100ms ease;
+}
+.citation-chip:hover { background: #d2eaee; }
+
+/* Tag pill */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 999px;
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+/* Subtle accent border-left for active/highlighted blocks */
+.accent-bar {
+  border-left: 3px solid var(--color-accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Accessibility, motion, and responsive utilities (Tier 1)
+   --------------------------------------------------------------------------- */
+
+/* Visible keyboard focus on every interactive element (WCAG 2.4.7). */
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+.btn:focus-visible, .pill-group button:focus-visible, .citation-chip:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 2px;
+}
+
+/* Spinner — applied automatically to the Loader2 icon. */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.8s linear infinite; transform-origin: 50% 50%; }
+
+/* Skeleton shimmer for loading states. */
+@keyframes shimmer { 0% { background-position: -420px 0; } 100% { background-position: 420px 0; } }
+.skeleton {
+  background: linear-gradient(90deg, var(--color-bg-elevated) 25%, #ededea 37%, var(--color-bg-elevated) 63%);
+  background-size: 840px 100%; animation: shimmer 1.4s ease infinite; border-radius: var(--radius-sm);
+}
+
+/* Wide tables scroll horizontally on narrow viewports instead of clipping. */
+@media (max-width: 860px) { .table { min-width: 680px; } }
+
+/* Responsive KPI / summary card grids. Replaces inline repeat(N,1fr); adapts to card count. */
+.grid-kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; }
+
+/* Honoured by anyone who prefers reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, .page-enter, .card-stagger > *, .spin, .skeleton { animation: none !important; transition: none !important; }
+}
+
+/* Dual-range slider: two stacked range inputs whose TRACKS ignore pointer events so clicks pass
+   through, but whose THUMBS re-enable pointer events so each thumb is independently draggable. */
+.dual-range input[type="range"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  pointer-events: none; /* track is click-through */
+}
+.dual-range input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto; /* but the thumb is grabbable */
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-bg-card);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+.dual-range input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-bg-card);
+  border-radius: 50%;
+  background: var(--color-accent);
+  cursor: pointer;
+}
+.dual-range input[type="range"]::-moz-range-track { background: transparent; }
+.dual-range input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--color-accent); outline-offset: 2px; }

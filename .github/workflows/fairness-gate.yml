@@ -1,0 +1,29 @@
+name: Fairness Gate
+
+# Blocks merges when the trained model breaches any fairness threshold defined in the
+# criminal-justice domain pack (domain_packs/criminal_justice/fairness.py).
+
+on:
+  pull_request:
+    paths:
+      - "pipelines/**"
+      - "fairness/**"
+      - "domain_packs/**"
+
+jobs:
+  fairness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install numpy pandas scikit-learn fairlearn pyyaml
+      - name: Run fairness audit (CI-gated)
+        run: |
+          if [ -f fairness/audit.py ]; then
+            python fairness/audit.py --gate
+          else
+            echo "fairness/audit.py not yet implemented — gate is a no-op until training lands"
+          fi

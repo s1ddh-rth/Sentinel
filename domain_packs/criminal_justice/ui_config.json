@@ -1,0 +1,21 @@
+{
+  "displayName": "Criminal Justice — Recidivism",
+  "idPrefix": "OFN",
+  "riskBands": {
+    "LOW": { "label": "Low", "color": "#3D8B6E" },
+    "MEDIUM": { "label": "Medium", "color": "#C4922A" },
+    "HIGH": { "label": "High", "color": "#B5453A" }
+  },
+  "offenceTypes": ["Theft", "Burglary", "Drug Possession", "Assault", "Fraud", "DUI", "Robbery"],
+  "regions": ["Atlanta Metro", "Savannah", "Augusta", "Macon", "Columbus", "Rural North", "Rural South"],
+  "races": ["White", "Black", "Hispanic", "Other"],
+  "reasonCodes": ["Stable employment", "Family support", "Clinical assessment", "New information", "Recent compliance", "Other"],
+  "featureLabels": {
+    "Prior_Arrest_Episodes_Violent": "Prior violent offences",
+    "Age_at_Release": "Age at release",
+    "Percent_Days_Employed": "Proportion of days employed",
+    "DrugTests_THC_Positive": "Positive THC drug tests",
+    "Prior_Conviction_Episodes_Felony": "Prior felony convictions",
+    "Education_Level": "Education level"
+  }
+}

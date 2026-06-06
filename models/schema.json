@@ -1,0 +1,43 @@
+{
+  "categorical": [
+    "Education_Level",
+    "Supervision_Level_First"
+  ],
+  "numeric": [
+    "Age_at_Release",
+    "Prior_Arrest_Episodes_Violent",
+    "Prior_Arrest_Episodes_Property",
+    "Prior_Arrest_Episodes_Drug",
+    "Prior_Conviction_Episodes_Felony",
+    "Percent_Days_Employed",
+    "DrugTests_THC_Positive",
+    "Gang_Affiliated"
+  ],
+  "target": "Recidivism_Within_3years",
+  "feature_order": [
+    "Education_Level",
+    "Supervision_Level_First",
+    "Age_at_Release",
+    "Prior_Arrest_Episodes_Violent",
+    "Prior_Arrest_Episodes_Property",
+    "Prior_Arrest_Episodes_Drug",
+    "Prior_Conviction_Episodes_Felony",
+    "Percent_Days_Employed",
+    "DrugTests_THC_Positive",
+    "Gang_Affiliated"
+  ],
+  "protected": [
+    "Race",
+    "Gender"
+  ],
+  "mitigation": "kamiran-calders reweighing on Race + per-group HIGH threshold",
+  "high_cut": 0.5,
+  "group_high_thresholds": {
+    "BLACK": 0.5228,
+    "HISPANIC": 0.514,
+    "OTHER": 0.496,
+    "WHITE": 0.4737
+  },
+  "conformal_halfwidth": 0.6702,
+  "conformal_level": 0.9
+}

@@ -1,0 +1,48 @@
+[project]
+name = "sentinel"
+version = "0.1.0"
+description = "Open-source AI platform for fairness-aware recidivism risk assessment"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "TCH", "RUF", "BLE", "PLC0415"]
+ignore = [
+    "B008",                       # FastAPI Depends() in defaults is idiomatic
+    "RUF001", "RUF002", "RUF003", # intentional typography (en dashes, arrows) in docstrings/comments
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Pydantic models need their annotation types available at runtime, so type-only imports must NOT
+# be moved into a TYPE_CHECKING block (TCH would break model building).
+"**/schemas.py" = ["TC001", "TC002", "TC003"]
+# Scientific code: capital-X feature-matrix naming (X, X_tr) is the sklearn convention, and the
+# training scripts carry long descriptive docstrings.
+"pipelines/*.py" = ["N803", "N806", "E501"]
+"services/predict/app/pipeline.py" = ["N803", "N806"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
+warn_unused_ignores = true
+disallow_untyped_decorators = false  # FastAPI/slowapi decorators are untyped
+
+[[tool.mypy.overrides]]
+module = [
+    "shap.*", "mapie.*", "fairlearn.*", "aif360.*", "neo4j.*", "qdrant_client.*",
+    "sentence_transformers.*", "psycopg2.*", "jose.*", "passlib.*", "slowapi.*",
+    "xgboost.*", "sklearn.*", "pandas.*", "structlog.*", "joblib.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["services", "pipelines", "evals", "fairness"]

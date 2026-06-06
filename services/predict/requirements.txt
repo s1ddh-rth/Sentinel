@@ -1,0 +1,24 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.9
+pydantic[email]>=2.9
+email-validator>=2.1
+pydantic-settings>=2.4
+python-jose[cryptography]>=3.3
+passlib[bcrypt]>=1.7
+bcrypt>=4.0,<5.0
+python-multipart>=0.0.9
+slowapi>=0.1.9
+psycopg2-binary>=2.9
+structlog>=24.4
+numpy>=1.26
+PyYAML>=6.0
+# Inference-time ML stack — load and serve the trained calibrated XGBoost (models/*.pkl).
+# CPU-only; no shap/numba (per-instance contributions use XGBoost's native pred_contribs).
+# Pinned to the versions the artifacts were trained with — unpickling sklearn/xgboost models across
+# major/minor versions is unsafe. Bump these together with a retrain.
+pandas>=2.2,<3
+# Parquet engine for pandas — backs the Dataset inspection page (reads data/processed/*.parquet).
+pyarrow>=15
+scikit-learn==1.8.0
+xgboost==3.2.0
