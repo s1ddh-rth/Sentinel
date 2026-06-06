@@ -1,9 +1,10 @@
 """The SENTINEL GraphRAG assistant — a PydanticAI agent with structured output.
 
-The model is selected by config: Ollama ``qwen2.5`` (primary, self-hosted, OpenAI-compatible API) or
-the Anthropic API (portable fallback). Output is the ``AgentResponse`` schema — never free-text
-parsed. Two tools are exposed: ``policy_search`` (dense retrieval over the domain pack) and
-``risk_lookup`` (the predict service). Built lazily so the service can boot without a live LLM.
+The model is selected by config: Ollama ``qwen2.5`` (self-hosted), Groq (fast hosted), or the
+Anthropic API. Output is the ``AgentResponse`` schema — never free-text parsed. Three tools are
+exposed: ``policy_search`` (dense retrieval over the domain pack), ``risk_lookup`` (the predict
+service), and ``similar_offenders`` (the graph service). Built lazily so the service can boot
+without a live LLM. ``run_agent`` retries transient provider tool-call failures.
 """
 
 from __future__ import annotations
@@ -31,7 +32,9 @@ SYSTEM_PROMPT = (
     "information in the knowledge base — do not guess.\n"
     "4. When the user asks about a specific offender's risk, call `risk_lookup` and put the result "
     "in `risk_context`.\n"
-    "5. Risk scores are advisory; a human makes the final decision and may override. Say so when "
+    "5. When the user asks who is similar to an offender, or about an offender's peer group, "
+    "community, or network, call `similar_offenders` and put the result in `graph_context`.\n"
+    "6. Risk scores are advisory; a human makes the final decision and may override. Say so when "
     "relevant. Keep answers concise and factual."
 )
 
@@ -91,11 +94,27 @@ def get_agent() -> Any:
         """Score an offender's feature dict via the calibrated risk model."""
         return tools.risk_lookup(features, ctx.deps.offender_id or "agent-query")
 
+    @agent.tool
+    def similar_offenders(ctx: RunContext[Deps], offender_id: str | None = None) -> dict[str, Any]:
+        """Find offenders similar to an id, with graph features (community, centrality, peers)."""
+        return tools.graph_lookup(offender_id or ctx.deps.offender_id or "")
+
     _agent = agent
     log.info("agent.built", provider=settings.agent_llm_provider)
     return _agent
 
 
-async def run_agent(message: str, offender_id: str | None = None) -> AgentResponse:
-    result = await get_agent().run(message, deps=Deps(offender_id=offender_id))
-    return result.output  # type: ignore[no-any-return]
+async def run_agent(message: str, offender_id: str | None = None, attempts: int = 3) -> AgentResponse:
+    # Some hosted models (notably Groq's Llama family) intermittently emit a malformed tool call that
+    # the provider rejects with HTTP 400 ``tool_use_failed``. The failure is stochastic, so retry a
+    # few times before surfacing the error rather than failing the whole request on a transient glitch.
+    last_err: Exception | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            result = await get_agent().run(message, deps=Deps(offender_id=offender_id))
+            return result.output  # type: ignore[no-any-return]
+        except Exception as err:  # noqa: BLE001 - retry transient tool-call failures, then re-raise
+            last_err = err
+            log.warning("agent.run.retry", attempt=attempt, max=attempts, error=str(err))
+    assert last_err is not None
+    raise last_err

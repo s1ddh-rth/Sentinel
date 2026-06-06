@@ -5,6 +5,7 @@ pydantic-settings>=2.4
 structlog>=24.4
 httpx>=0.27
 python-jose[cryptography]>=3.3
+slowapi>=0.1.9
 pydantic-ai-slim[openai,anthropic]>=0.0.14
 qdrant-client>=1.10
 sentence-transformers>=3.0

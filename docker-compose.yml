@@ -87,7 +87,7 @@ services:
     build: ./services/agent
     profiles: ["full"]
     ports:
-      - "8001:8001"
+      - "${AGENT_PORT:-8001}:8001"
     depends_on:
       - postgres
       - qdrant
@@ -124,7 +124,7 @@ services:
     build: ./services/graph
     profiles: ["full"]
     ports:
-      - "8002:8002"
+      - "${GRAPH_PORT:-8002}:8002"
     depends_on:
       - neo4j
     environment:
@@ -140,15 +140,15 @@ services:
       - "traefik.http.services.graph.loadbalancer.server.port=8002"
 
   neo4j:
-    image: neo4j:5-community
+    image: docker.io/library/neo4j:5-community
     profiles: ["full"]
     environment:
       NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-sentinel}
     volumes:
       - neo4j_data:/data
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "${NEO4J_HTTP_PORT:-7474}:7474"
+      - "${NEO4J_BOLT_PORT:-7687}:7687"
 
   qdrant:
     image: qdrant/qdrant:latest
@@ -156,7 +156,7 @@ services:
     volumes:
       - qdrant_data:/qdrant/storage
     ports:
-      - "6333:6333"
+      - "${QDRANT_PORT:-6333}:6333"
 
   ollama:
     image: ollama/ollama:latest

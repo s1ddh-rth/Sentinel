@@ -11,10 +11,14 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 import structlog
-from fastapi import FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Request, status
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 from . import retriever
 from .config import settings
+from .middleware import get_current_user, limiter
 from .schemas import AgentResponse, ChatRequest
 
 structlog.configure(
@@ -44,6 +48,9 @@ async def lifespan(app: FastAPI) -> Any:
 
 
 app = FastAPI(title="SENTINEL · agent", version="0.1.0", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
+app.add_middleware(SlowAPIMiddleware)
 
 
 @app.get("/health")
@@ -52,7 +59,12 @@ def health() -> dict[str, str]:
 
 
 @app.post("/chat", response_model=AgentResponse)
-async def chat(body: ChatRequest) -> AgentResponse:
+@limiter.limit("10/minute")
+async def chat(
+    request: Request,
+    body: ChatRequest,
+    _user: dict[str, Any] = Depends(get_current_user),
+) -> AgentResponse:
     from .agent import run_agent  # noqa: PLC0415 - import here so /health never needs the LLM stack
 
     try:
