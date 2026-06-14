@@ -2,61 +2,132 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "../components/ui.jsx";
 import { api } from "../lib/api.js";
-import { SENTINEL_DATA } from "../lib/mockData.js";
+
+// Conversations are kept ONLY in this browser's localStorage — never persisted on the server (the
+// agent /chat endpoint is stateless). Users own their history here and can delete it at any time.
+const STORAGE_KEY = "sentinel.assistant.conversations.v1";
+const NEW_TITLE = "New conversation";
+
+const uid = () =>
+  (typeof crypto !== "undefined" && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : `c-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+
+const freshConversation = () => ({ id: uid(), title: NEW_TITLE, createdAt: Date.now(), messages: [] });
+
+const formatDate = (ts) => {
+  try {
+    return new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return "";
+  }
+};
+
+function loadConversations() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (Array.isArray(parsed) && parsed.length) return parsed;
+  } catch {
+    /* corrupt or unavailable storage — fall through to a fresh conversation */
+  }
+  return [freshConversation()];
+}
 
 export default function RagAssistant() {
-  const D = SENTINEL_DATA;
-  const [activeSession, setActiveSession] = useState("s1");
-  const [messages, setMessages] = useState([]);
+  const [conversations, setConversations] = useState(loadConversations);
+  const [activeId, setActiveId] = useState(() => conversations[0].id);
   const [input, setInput] = useState("");
   const [openCite, setOpenCite] = useState(null);
   const [sending, setSending] = useState(false);
   const scrollRef = useRef(null);
 
+  const activeConv = conversations.find(c => c.id === activeId) || conversations[0];
+  const messages = activeConv ? activeConv.messages : [];
+
+  // Persist to this browser only. Wrapped so a full/blocked localStorage never breaks the chat.
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+    } catch {
+      /* ignore quota / private-mode errors — chat still works in-memory for this session */
+    }
+  }, [conversations]);
+
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages, sending]);
+  }, [messages, sending, activeId]);
+
+  // Append messages to a specific conversation, and set its title from the first question.
+  const patchConversation = (id, updater) =>
+    setConversations(cs => cs.map(c => (c.id === id ? updater(c) : c)));
 
   const send = async (e) => {
     e.preventDefault();
     if (!input.trim() || sending) return;
-    const userMsg = { role: "user", content: input };
-    const question = input;
-    setMessages(m => [...m, userMsg]);
+    const convId = activeId;
+    const question = input.trim();
+    const userMsg = { role: "user", content: question };
+    patchConversation(convId, c => ({
+      ...c,
+      title: c.title === NEW_TITLE ? question.slice(0, 48) : c.title,
+      messages: [...c.messages, userMsg],
+    }));
     setInput("");
+    setOpenCite(null);
     setSending(true);
     try {
-      const r = await api.chat({ session_id: activeSession, message: question, offender_id: "OFN-2014-0847" });
+      const r = await api.chat({ session_id: convId, message: question, offender_id: "OFN-2014-0847" });
       // Map the agent's structured AgentResponse {answer, citations:[{source,snippet,score}]}.
       const citations = (r.citations || []).map((c, i) => ({
         idx: i + 1, source: c.source, chunk: c.snippet, score: c.score ?? 0,
       }));
-      setMessages(m => [...m, {
-        role: "assistant",
-        content: r.answer || "(the assistant returned no answer)",
-        citations,
-        risk: r.risk_context || null,
-        retrieval: "Hybrid",
-        review: false,
-      }]);
+      patchConversation(convId, c => ({
+        ...c,
+        messages: [...c.messages, {
+          role: "assistant",
+          content: r.answer || "(the assistant returned no answer)",
+          citations,
+          risk: r.risk_context || null,
+          retrieval: "Hybrid",
+          review: false,
+        }],
+      }));
     } catch (err) {
-      setMessages(m => [...m, {
-        role: "assistant",
-        offline: true,
-        content:
-          "The assistant is currently offline. Retrieval and the risk/graph tools are live, but " +
-          "answer generation needs a connected LLM (Ollama qwen2.5 or the Anthropic API). " +
-          (err?.status === 503 ? "The agent service reported the model is unavailable." : ""),
-        citations: [],
-      }]);
+      patchConversation(convId, c => ({
+        ...c,
+        messages: [...c.messages, {
+          role: "assistant",
+          offline: true,
+          content:
+            "The assistant is currently offline. Retrieval and the risk/graph tools are live, but " +
+            "answer generation needs a connected LLM. " +
+            (err?.status === 503 ? "The agent service reported the model is unavailable." : ""),
+          citations: [],
+        }],
+      }));
     } finally {
       setSending(false);
     }
   };
 
   const newConversation = () => {
-    setMessages([]);
+    const conv = freshConversation();
+    setConversations(cs => [conv, ...cs]);
+    setActiveId(conv.id);
     setInput("");
+    setOpenCite(null);
+  };
+
+  const deleteConversation = (id, e) => {
+    if (e) e.stopPropagation();
+    setConversations(cs => {
+      const next = cs.filter(c => c.id !== id);
+      // Never leave the user with zero conversations — start a fresh one if they deleted the last.
+      const ensured = next.length ? next : [freshConversation()];
+      if (id === activeId) setActiveId(ensured[0].id);
+      return ensured;
+    });
     setOpenCite(null);
   };
 
@@ -76,8 +147,6 @@ export default function RagAssistant() {
     URL.revokeObjectURL(url);
   };
 
-  const activeConv = D.conversations.find(c => c.id === activeSession) || D.conversations[0];
-
   return (
     <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: 20, height: "calc(100vh - 56px - 64px)", minHeight: 580 }}>
       {/* Conversations sidebar */}
@@ -89,30 +158,46 @@ export default function RagAssistant() {
         <div style={{ padding: "16px 16px 12px", display: "flex", flexDirection: "column", gap: 12, borderBottom: "1px solid var(--color-divider)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 14 }}>Conversations</h3>
-            <span className="mono" style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>{D.conversations.length}</span>
+            <span className="mono" style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>{conversations.length}</span>
           </div>
           <button className="btn btn-primary" onClick={newConversation} style={{ width: "100%", justifyContent: "center" }}>
             <Icon name="Plus" size={14} /> New conversation
           </button>
         </div>
         <div style={{ flex: 1, overflow: "auto", padding: 6 }}>
-          {D.conversations.map(c => (
-            <button key={c.id} onClick={() => setActiveSession(c.id)}
-              style={{
-                width: "100%", textAlign: "left", padding: "10px 12px", border: "none",
-                background: c.id === activeSession ? "var(--color-accent-subtle)" : "transparent",
-                borderRadius: "var(--radius-sm)", cursor: "pointer", marginBottom: 2,
-                borderLeft: c.id === activeSession ? "3px solid var(--color-accent)" : "3px solid transparent",
-              }}
-              onMouseEnter={e => { if (c.id !== activeSession) e.currentTarget.style.background = "var(--color-bg-elevated)"; }}
-              onMouseLeave={e => { if (c.id !== activeSession) e.currentTarget.style.background = "transparent"; }}>
-              <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)",
-                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 2 }}>
-                {c.title}
+          {conversations.map(c => {
+            const isActive = c.id === activeId;
+            return (
+              <div key={c.id} onClick={() => { setActiveId(c.id); setOpenCite(null); }}
+                className="conv-row"
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "8px 8px 8px 12px", cursor: "pointer", marginBottom: 2,
+                  background: isActive ? "var(--color-accent-subtle)" : "transparent",
+                  borderRadius: "var(--radius-sm)",
+                  borderLeft: isActive ? "3px solid var(--color-accent)" : "3px solid transparent",
+                }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "var(--color-bg-elevated)"; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-primary)",
+                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 2 }}>
+                    {c.title}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>
+                    {formatDate(c.createdAt)} · {c.messages.length} msg{c.messages.length === 1 ? "" : "s"}
+                  </div>
+                </div>
+                <button className="btn btn-ghost" title="Delete conversation" aria-label="Delete conversation"
+                  onClick={e => deleteConversation(c.id, e)}
+                  style={{ flexShrink: 0, padding: 6, color: "var(--color-text-tertiary)" }}
+                  onMouseEnter={e => e.currentTarget.style.color = "var(--color-risk-high)"}
+                  onMouseLeave={e => e.currentTarget.style.color = "var(--color-text-tertiary)"}>
+                  <Icon name="Trash2" size={14} />
+                </button>
               </div>
-              <div style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>{c.date}</div>
-            </button>
-          ))}
+            );
+          })}
         </div>
       </aside>
 
@@ -127,10 +212,10 @@ export default function RagAssistant() {
           <div style={{ minWidth: 0, flex: 1 }}>
             <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16,
               overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {activeConv.title}
+              {activeConv?.title || NEW_TITLE}
             </h2>
             <div style={{ fontSize: 12, color: "var(--color-text-tertiary)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              Session <span className="mono">{activeConv.id}</span> · started 09:14 · context: OFN-2014-0847
+              {activeConv ? `Started ${formatDate(activeConv.createdAt)}` : "New session"} · context: <span className="mono">OFN-2014-0847</span> · stored in your browser
             </div>
           </div>
           <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>

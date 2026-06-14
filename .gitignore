@@ -48,3 +48,6 @@ playwright-report/
 /*.png
 /*.jpg
 /*.jpeg
+
+# Local .env backups (may contain secrets)
+.env.bak*

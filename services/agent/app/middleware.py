@@ -1,8 +1,8 @@
 """Auth dependency and the slowapi rate limiter for the agent service.
 
-Mirrors the predict service's gate: a Bearer JWT (validated against the shared secret) is required to
-reach the assistant, and a per-client rate limit protects the upstream LLM quota from abuse once the
-endpoint is exposed publicly.
+Mirrors the predict service's gate: a Bearer JWT (validated against the shared secret) is required
+to reach the assistant, and a per-client rate limit protects the upstream LLM quota from abuse once
+the endpoint is exposed publicly.
 """
 
 from __future__ import annotations

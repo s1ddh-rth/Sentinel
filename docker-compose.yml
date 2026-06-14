@@ -4,6 +4,7 @@ services:
   # ----------------------------------------------------------------------- #
   traefik:
     image: docker.io/library/traefik:v3.2
+    restart: always
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -24,6 +25,7 @@ services:
 
   frontend:
     build: ./frontend
+    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
@@ -32,8 +34,9 @@ services:
 
   predict:
     build: ./services/predict
+    restart: always
     ports:
-      - "${PREDICT_PORT:-8000}:8000"
+      - "127.0.0.1:${PREDICT_PORT:-8000}:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -65,6 +68,7 @@ services:
 
   postgres:
     image: postgres:16
+    restart: always
     environment:
       POSTGRES_DB: sentinel
       POSTGRES_USER: sentinel
@@ -73,7 +77,7 @@ services:
       - pg_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro,z
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sentinel"]
       interval: 5s
@@ -85,9 +89,10 @@ services:
   # ----------------------------------------------------------------------- #
   agent:
     build: ./services/agent
+    restart: always
     profiles: ["full"]
     ports:
-      - "${AGENT_PORT:-8001}:8001"
+      - "127.0.0.1:${AGENT_PORT:-8001}:8001"
     depends_on:
       - postgres
       - qdrant
@@ -122,9 +127,10 @@ services:
 
   graph:
     build: ./services/graph
+    restart: always
     profiles: ["full"]
     ports:
-      - "${GRAPH_PORT:-8002}:8002"
+      - "127.0.0.1:${GRAPH_PORT:-8002}:8002"
     depends_on:
       - neo4j
     environment:
@@ -141,33 +147,37 @@ services:
 
   neo4j:
     image: docker.io/library/neo4j:5-community
+    restart: always
     profiles: ["full"]
     environment:
       NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-sentinel}
     volumes:
       - neo4j_data:/data
     ports:
-      - "${NEO4J_HTTP_PORT:-7474}:7474"
-      - "${NEO4J_BOLT_PORT:-7687}:7687"
+      - "127.0.0.1:${NEO4J_HTTP_PORT:-7474}:7474"
+      - "127.0.0.1:${NEO4J_BOLT_PORT:-7687}:7687"
 
   qdrant:
     image: qdrant/qdrant:latest
+    restart: always
     profiles: ["full"]
     volumes:
       - qdrant_data:/qdrant/storage
     ports:
-      - "${QDRANT_PORT:-6333}:6333"
+      - "127.0.0.1:${QDRANT_PORT:-6333}:6333"
 
   ollama:
     image: ollama/ollama:latest
+    restart: always
     profiles: ["full"]
     volumes:
       - ollama_data:/root/.ollama
     ports:
-      - "11434:11434"
+      - "127.0.0.1:11434:11434"
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:latest
+    restart: always
     profiles: ["full"]
     command: >
       mlflow server --host 0.0.0.0 --port 5000
@@ -176,7 +186,7 @@ services:
     volumes:
       - mlflow_data:/mlflow
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
 
 volumes:
   pg_data:

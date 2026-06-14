@@ -167,39 +167,6 @@ const mlflow = [
   { runId: "1bf6e22", date: "2026-02-12", brier: 0.207, auc: 0.755, spd: -0.13, di: 0.81, status: "archived" },
 ];
 
-// ===== Conversations =====
-const conversations = [
-  { id: "s1", title: "Sentencing guidelines for repeat burglary", date: "Today, 09:14" },
-  { id: "s2", title: "How is SPD computed across race groups?", date: "Yesterday" },
-  { id: "s3", title: "Override policy for low-risk reclassification", date: "12 Mar" },
-  { id: "s4", title: "OFN-2014-0847 — relevant programs", date: "10 Mar" },
-  { id: "s5", title: "Definition of conformal interval", date: "08 Mar" },
-];
-const chatThread = [
-  { role: "user", content: "What sentencing guidelines apply to a third-offence non-violent burglary in Georgia?" },
-  {
-    role: "assistant",
-    content: "Under Georgia O.C.G.A. §17-10-7, defendants with three or more prior felony convictions face mandatory minimum sentencing on the fourth offence. For non-violent burglary specifically, the court retains discretion to recommend probation in lieu of incarceration where the offender demonstrates substantial rehabilitative progress[1]. Programmatic alternatives — including drug court diversion and accountability court placement — are explicitly authorised in §15-1-15[2]. Recent appellate guidance further clarifies that prior offences must be 'qualifying' under the statute, excluding juvenile adjudications[3].",
-    citations: [
-      { idx: 1, source: "Georgia Sentencing Guidelines, 2023", page: 47, score: 0.91, chunk: "On the fourth or subsequent felony conviction, the court shall impose the maximum penalty unless the offender meets criteria under subsection (c) for accountability court placement…" },
-      { idx: 2, source: "O.C.G.A. §15-1-15 — Accountability Courts Act", page: 3, score: 0.86, chunk: "Each judicial circuit may establish drug courts, mental health courts, and veterans courts to provide alternatives to incarceration for eligible defendants…" },
-      { idx: 3, source: "State v. Reed, 318 Ga. 412 (2024)", page: 8, score: 0.79, chunk: "We hold that juvenile adjudications, absent transfer to superior court, do not constitute qualifying convictions for purposes of the recidivist sentencing statute…" },
-    ],
-    retrieval: "Hybrid",
-    review: false,
-  },
-  { role: "user", content: "Does the recidivism prediction model consider arrest counts as a feature?" },
-  {
-    role: "assistant",
-    content: "The current production model uses 'prior conviction counts' rather than 'arrest counts' as a feature. This is a deliberate fairness choice: arrest-count features have been shown to encode policing-pattern bias and amplify disparate impact against minority groups[1]. The relevant feature in the model is `prior_conviction_count_violent`, which uses court-confirmed convictions only.",
-    citations: [
-      { idx: 1, source: "Fairness Methodology, SENTINEL docs", page: 12, score: 0.93, chunk: "Arrest-based features are excluded from the production model as they systematically reflect enforcement bias rather than offending behaviour…" },
-    ],
-    retrieval: "Vector",
-    review: true,
-  },
-];
-
 // ===== Audit trail =====
 const audit = [];
 const actions = ["prediction", "override", "feedback", "promotion"];
@@ -226,7 +193,7 @@ export const SENTINEL_DATA = {
   offenceTypes, regions, races, reasonCodes,
   cohort, primary: cohort[0], shap, detailedFactors, similar, graph,
   fairness, calibration, roc, ragas, mlflow,
-  conversations, chatThread, audit,
+  audit,
   metrics: {
     totalAssessed: 3412,
     highRisk: 614,

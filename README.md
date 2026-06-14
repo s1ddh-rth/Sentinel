@@ -8,6 +8,10 @@ An open-source **reference implementation** for fairness-aware recidivism risk a
 prediction, knowledge-graph reasoning, and retrieval-augmented assistance, built around fairness
 constraints, uncertainty, explainability, and human-in-the-loop oversight.
 
+### 🔗 Live demo — **[sentinel.s1ddh9rth.co.uk](https://sentinel.s1ddh9rth.co.uk)**
+
+Demo accounts (password `sentinel-demo-2026`): `admin`, `analyst`, `officer`.
+
 </div>
 
 ---

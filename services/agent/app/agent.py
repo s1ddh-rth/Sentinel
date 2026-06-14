@@ -104,17 +104,31 @@ def get_agent() -> Any:
     return _agent
 
 
-async def run_agent(message: str, offender_id: str | None = None, attempts: int = 3) -> AgentResponse:
-    # Some hosted models (notably Groq's Llama family) intermittently emit a malformed tool call that
-    # the provider rejects with HTTP 400 ``tool_use_failed``. The failure is stochastic, so retry a
-    # few times before surfacing the error rather than failing the whole request on a transient glitch.
+async def run_agent(
+    message: str, offender_id: str | None = None, attempts: int = 3
+) -> AgentResponse:
+    # Some hosted models (notably Groq's Llama family) intermittently emit a malformed tool call
+    # the provider rejects with HTTP 400 ``tool_use_failed``. The failure is stochastic, so retry
+    # a few times before surfacing the error rather than failing the request on a transient glitch.
+    # The same models also occasionally return a well-formed but EMPTY answer (they skip the tool
+    # call and emit nothing); treat that as a transient failure and retry too, so the UI never
+    # shows a blank response when a later attempt would succeed.
     last_err: Exception | None = None
+    last_empty: AgentResponse | None = None
     for attempt in range(1, attempts + 1):
         try:
             result = await get_agent().run(message, deps=Deps(offender_id=offender_id))
-            return result.output  # type: ignore[no-any-return]
+            output: AgentResponse = result.output
+            if output.answer and output.answer.strip():
+                return output
+            last_empty = output
+            log.warning("agent.run.empty", attempt=attempt, max=attempts)
         except Exception as err:  # noqa: BLE001 - retry transient tool-call failures, then re-raise
             last_err = err
             log.warning("agent.run.retry", attempt=attempt, max=attempts, error=str(err))
+    # All attempts produced an empty answer (but never errored): return the last one so the caller
+    # gets a valid response rather than a 503 — the UI renders its own "no answer" fallback.
+    if last_empty is not None:
+        return last_empty
     assert last_err is not None
     raise last_err
